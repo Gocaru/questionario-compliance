@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionário de Diagnóstico Operacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1923;
+    --ink-soft: #3a4a58;
+    --ink-light: #8a99a8;
+    --accent: #c8a96e;
+    --accent-soft: #f5efe4;
+    --border: #dde3ea;
+    --bg: #f9fafb;
+    --white: #ffffff;
+    --section-colors: #1a3a5c, #1a3a5c, #1a3a5c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* COVER */
+  .cover {
+    background: var(--ink);
+    color: white;
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.08);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 200px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.05);
+  }
+  .cover-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 500;
+    line-height: 1.2;
+    max-width: 640px;
+    margin-bottom: 24px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+  .cover-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+  }
+  .cover-meta-item span { color: rgba(255,255,255,0.85); }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--ink-light);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* SECTIONS */
+  .section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .section:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+
+  .section-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-num {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .section-title-wrap { flex: 1; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+  .section-toggle {
+    color: var(--ink-light);
+    font-size: 18px;
+    transition: transform 0.3s;
+    margin-top: 2px;
+  }
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
+
+  .section-body {
+    padding: 28px 32px;
+    display: block;
+  }
+  .section.collapsed .section-body { display: none; }
+
+  /* QUESTIONS */
+  .question {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .question:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  /* CHECKBOXES */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--bg);
+  }
+  .option-item:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .option-item input[type="checkbox"],
+  .option-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .option-item input[type="radio"] { border-radius: 50%; }
+  .option-item input[type="checkbox"]:checked,
+  .option-item input[type="radio"]:checked {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .option-item input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 5px;
+    width: 5px; height: 9px;
+    border: 2px solid white;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+  .option-item input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 8px; height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+  .option-item:has(input:checked) {
+    border-color: var(--ink);
+    background: var(--accent-soft);
+  }
+  .option-label { font-size: 14px; color: var(--ink-soft); line-height: 1.3; }
+
+  /* INPUTS */
+  .text-input, .textarea-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--bg);
+    transition: border-color 0.2s;
+    resize: vertical;
+    outline: none;
+  }
+  .text-input:focus, .textarea-input:focus {
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+  }
+  .textarea-input { min-height: 90px; }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .other-input-wrap {
+    margin-top: 8px;
+  }
+
+  /* SUBMIT SECTION */
+  .submit-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .submit-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .submit-section p {
+    color: var(--ink-light);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .btn-submit {
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 14px 48px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+  }
+  .btn-submit:hover {
+    background: #1d2e3e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(15,25,35,0.2);
+  }
+  .btn-export {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: all 0.2s;
+  }
+  .btn-export:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--ink);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 9999;
+    border-left: 4px solid var(--accent);
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 640px) {
+    .cover { padding: 48px 24px 40px; }
+    .progress-bar-wrap { padding: 14px 24px; }
+    .section-header, .section-body { padding: 20px; }
+    .options-grid { grid-template-columns: 1fr; }
+    .input-row { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    .progress-bar-wrap, .btn-submit, .btn-export { display: none; }
+    .section.collapsed .section-body { display: block; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">Diagnóstico de Processo</div>
+  <h1>Questionário Operacional<br>Analista de Compliance / AML</h1>
+  <div class="cover-meta">
+    <div class="cover-meta-item">🗂 <span>11 Secções</span></div>
+    <div class="cover-meta-item">📋 <span>~45 Questões</span></div>
+    <div class="cover-meta-item">⏱ <span>Duração estimada: 20–30 min</span></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 45 respondidas</div>
+</div>
+
+<div class="main">
+
+<!-- ─── SECÇÃO 1 ─── -->
+<div class="section" id="s1">
+  <div class="section-header" onclick="toggleSection('s1')">
+    <div class="section-num">1</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Contexto Operacional do Trabalho</div>
+      <div class="section-subtitle">Tipo de análises, volume e natureza do trabalho</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">1.1</div>
+      <div class="q-text">Que tipo de análises realiza com maior frequência?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q1_1" value="onboarding"><span class="option-label">Onboarding de clientes</span></label>
+        <label class="option-item"><input type="checkbox" name="q1_1" value="periodic"><span class="option-label">Revisões periódicas (Periodic Reviews)</span></label>
+        <label class="option-item"><input type="checkbox" name="q1_1" value="edd"><span class="option-label">Enhanced Due Diligence (EDD)</span></label>
+        <label class="option-item"><input type="checkbox" name="q1_1" value="alertas"><span class="option-label">Alertas / investigações</span></label>
+      </div>
+      <div class="other-input-wrap">
+        <input type="text" class="text-input" placeholder="Outras (especifique)..." name="q1_1_outro">
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">1.2</div>
+      <div class="q-text">Quantos casos gere em média?</div>
+      <div class="input-row">
+        <div class="input-group"><label>Por dia</label><input type="text" class="text-input" name="q1_2_dia" placeholder="Ex: 5–10"></div>
+        <div class="input-group"><label>Por semana</label><input type="text" class="text-input" name="q1_2_semana" placeholder="Ex: 25–40"></div>
+        <div class="input-group"><label>Por mês</label><input type="text" class="text-input" name="q1_2_mes" placeholder="Ex: 80–150"></div>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">1.3</div>
+      <div class="q-text">O trabalho é predominantemente:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q1_3" value="reativo"><span class="option-label">Reactivo (responder a pedidos / alertas)</span></label>
+        <label class="option-item"><input type="radio" name="q1_3" value="proativo"><span class="option-label">Proactivo (revisões planeadas / controlos)</span></label>
+        <label class="option-item"><input type="radio" name="q1_3" value="misto"><span class="option-label">Misto</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">1.4</div>
+      <div class="q-text">Existem picos sazonais de carga? Em que situações?</div>
+      <textarea class="textarea-input" name="q1_4" placeholder="Descreva os períodos ou situações de maior pressão..."></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 2 ─── -->
+<div class="section" id="s2">
+  <div class="section-header" onclick="toggleSection('s2')">
+    <div class="section-num">2</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Fontes de Informação Utilizadas</div>
+      <div class="section-subtitle">Origem, estrutura e tipos de dados e documentos</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">2.1</div>
+      <div class="q-text">Onde obtém a informação necessária para análise?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q2_1" value="email"><span class="option-label">Emails</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_1" value="crm"><span class="option-label">CRM</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_1" value="corebanking"><span class="option-label">Core Banking</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_1" value="docs_cliente"><span class="option-label">Documentos do cliente</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_1" value="excel"><span class="option-label">Ficheiros Excel</span></label>
+      </div>
+      <div class="other-input-wrap">
+        <input type="text" class="text-input" name="q2_1_outro" placeholder="Outros sistemas (especifique)...">
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">2.2</div>
+      <div class="q-text">Qual a fonte que consome mais tempo?</div>
+      <textarea class="textarea-input" name="q2_2" placeholder="Descreva a fonte mais morosa e porquê..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">2.3</div>
+      <div class="q-text">A informação costuma chegar:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q2_3" value="estruturada"><span class="option-label">Estruturada</span></label>
+        <label class="option-item"><input type="radio" name="q2_3" value="semi"><span class="option-label">Semi-estruturada</span></label>
+        <label class="option-item"><input type="radio" name="q2_3" value="narrativa"><span class="option-label">Desorganizada / narrativa livre</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">2.4</div>
+      <div class="q-text">Recebe muitos documentos? Que tipos?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q2_4" value="id"><span class="option-label">Identificação</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_4" value="fundos"><span class="option-label">Origem de fundos / património</span></label>
+        <label class="option-item"><input type="checkbox" name="q2_4" value="estruturas"><span class="option-label">Estruturas societárias</span></label>
+      </div>
+      <div class="other-input-wrap">
+        <input type="text" class="text-input" name="q2_4_outro" placeholder="Outros tipos de documentos...">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 3 ─── -->
+<div class="section" id="s3">
+  <div class="section-header" onclick="toggleSection('s3')">
+    <div class="section-num">3</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Principais Dores & Ineficiências</div>
+      <div class="section-subtitle">O que consome tempo, gera erros ou causa atrasos</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">3.1</div>
+      <div class="q-text">O que consome mais tempo no dia-a-dia?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q3_1" value="procurar"><span class="option-label">Procurar informação</span></label>
+        <label class="option-item"><input type="checkbox" name="q3_1" value="validar"><span class="option-label">Validar consistência</span></label>
+        <label class="option-item"><input type="checkbox" name="q3_1" value="pedir"><span class="option-label">Pedir elementos em falta</span></label>
+        <label class="option-item"><input type="checkbox" name="q3_1" value="followup"><span class="option-label">Follow-up com área comercial</span></label>
+        <label class="option-item"><input type="checkbox" name="q3_1" value="registos"><span class="option-label">Registos / reporting</span></label>
+        <label class="option-item"><input type="checkbox" name="q3_1" value="justificacoes"><span class="option-label">Justificações / evidência</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">3.2</div>
+      <div class="q-text">Quais tarefas considera mais repetitivas?</div>
+      <textarea class="textarea-input" name="q3_2" placeholder="Descreva as tarefas que repete com mais frequência..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">3.3</div>
+      <div class="q-text">Onde ocorrem mais erros ou retrabalho?</div>
+      <textarea class="textarea-input" name="q3_3" placeholder="Identifique os pontos de falha mais comuns..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">3.4</div>
+      <div class="q-text">Que tipo de situações geram mais atrasos?</div>
+      <textarea class="textarea-input" name="q3_4" placeholder="Ex: dependência de terceiros, sistemas lentos, aprovações..."></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 4 ─── -->
+<div class="section" id="s4">
+  <div class="section-header" onclick="toggleSection('s4')">
+    <div class="section-num">4</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Validações & Regras de Negócio</div>
+      <div class="section-subtitle">Como são tomadas as decisões e aplicadas as regras</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">4.1</div>
+      <div class="q-text">As validações seguem:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q4_1" value="checklists"><span class="option-label">Checklists formais</span></label>
+        <label class="option-item"><input type="checkbox" name="q4_1" value="procedimentos"><span class="option-label">Procedimentos escritos</span></label>
+        <label class="option-item"><input type="checkbox" name="q4_1" value="experiencia"><span class="option-label">Experiência individual</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">4.2</div>
+      <div class="q-text">Existem regras claras do tipo "Se X → exigir Y" ou "Se perfil Z → validações adicionais"?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q4_2" value="sim_documentado"><span class="option-label">Sim, documentado e partilhado</span></label>
+        <label class="option-item"><input type="radio" name="q4_2" value="sim_informal"><span class="option-label">Sim, mas informal / tácito</span></label>
+        <label class="option-item"><input type="radio" name="q4_2" value="nao"><span class="option-label">Não, cada caso é tratado individualmente</span></label>
+      </div>
+      <div class="other-input-wrap">
+        <textarea class="textarea-input" name="q4_2_detalhe" placeholder="Se sim, dê exemplos das regras mais comuns..."></textarea>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">4.3</div>
+      <div class="q-text">Há variabilidade entre analistas? Em que aspectos?</div>
+      <textarea class="textarea-input" name="q4_3" placeholder="Descreva onde os analistas tendem a divergir na abordagem..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">4.4</div>
+      <div class="q-text">Que incoerências surgem com maior frequência?</div>
+      <textarea class="textarea-input" name="q4_4" placeholder="Ex: critérios de aceitação, limites de risco, documentação exigida..."></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 5 ─── -->
+<div class="section" id="s5">
+  <div class="section-header" onclick="toggleSection('s5')">
+    <div class="section-num">5</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Interacção com Área Comercial</div>
+      <div class="section-subtitle">Follow-up, comunicação e SLAs</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">5.1</div>
+      <div class="q-text">Como decorre normalmente o follow-up com a área comercial?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q5_1" value="email"><span class="option-label">Email</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_1" value="telefone"><span class="option-label">Telefone</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_1" value="sistema"><span class="option-label">Sistema interno</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_1" value="misto"><span class="option-label">Misto</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">5.2</div>
+      <div class="q-text">Quais são os problemas mais comuns nessa interacção?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q5_2" value="tardias"><span class="option-label">Respostas tardias</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_2" value="incompleta"><span class="option-label">Informação incompleta</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_2" value="visibilidade"><span class="option-label">Falta de visibilidade</span></label>
+        <label class="option-item"><input type="checkbox" name="q5_2" value="repeticao"><span class="option-label">Repetição de pedidos</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">5.3</div>
+      <div class="q-text">Existem SLAs formais definidos?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q5_3" value="sim_cumpridos"><span class="option-label">Sim, e são cumpridos</span></label>
+        <label class="option-item"><input type="radio" name="q5_3" value="sim_nao_cumpridos"><span class="option-label">Sim, mas frequentemente não cumpridos</span></label>
+        <label class="option-item"><input type="radio" name="q5_3" value="nao"><span class="option-label">Não existem SLAs formais</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">5.4</div>
+      <div class="q-text">O que facilitaria essa interacção?</div>
+      <textarea class="textarea-input" name="q5_4" placeholder="Que mudanças de processo, ferramenta ou comunicação ajudariam?"></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 6 ─── -->
+<div class="section" id="s6">
+  <div class="section-header" onclick="toggleSection('s6')">
+    <div class="section-num">6</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Controlo de Gestão & KPIs</div>
+      <div class="section-subtitle">Métricas acompanhadas e lacunas de visibilidade</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">6.1</div>
+      <div class="q-text">Que KPIs acompanha regularmente?</div>
+      <textarea class="textarea-input" name="q6_1" placeholder="Ex: número de casos, tempo médio de resolução, taxa de conclusão..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">6.2</div>
+      <div class="q-text">Como os controla actualmente?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q6_2" value="excel"><span class="option-label">Excel</span></label>
+        <label class="option-item"><input type="checkbox" name="q6_2" value="manual"><span class="option-label">Reporting manual</span></label>
+        <label class="option-item"><input type="checkbox" name="q6_2" value="dashboards"><span class="option-label">Dashboards</span></label>
+        <label class="option-item"><input type="checkbox" name="q6_2" value="sistema"><span class="option-label">Sistema dedicado</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">6.3</div>
+      <div class="q-text">Onde há mais dificuldade no controlo de gestão?</div>
+      <textarea class="textarea-input" name="q6_3" placeholder="Ex: dados dispersos, falta de automatização, qualidade dos dados..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">6.4</div>
+      <div class="q-text">Que indicadores gostaria de ter mas não tem actualmente?</div>
+      <textarea class="textarea-input" name="q6_4" placeholder="Descreva as métricas que faltam para gerir melhor o trabalho..."></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 7 ─── -->
+<div class="section" id="s7">
+  <div class="section-header" onclick="toggleSection('s7')">
+    <div class="section-num">7</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Registos & Evidência</div>
+      <div class="section-subtitle">Documentação, auditoria e carga administrativa</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">7.1</div>
+      <div class="q-text">Onde regista a análise efectuada?</div>
+      <textarea class="textarea-input" name="q7_1" placeholder="Sistema(s) utilizado(s), formato, localização..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">7.2</div>
+      <div class="q-text">O registo é tipicamente:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q7_2" value="estruturado"><span class="option-label">Estruturado (campos definidos)</span></label>
+        <label class="option-item"><input type="radio" name="q7_2" value="texto_livre"><span class="option-label">Texto livre</span></label>
+        <label class="option-item"><input type="radio" name="q7_2" value="disperso"><span class="option-label">Disperso em vários locais</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">7.3</div>
+      <div class="q-text">O que torna as auditorias / controlos mais difíceis?</div>
+      <textarea class="textarea-input" name="q7_3" placeholder="Identifique os principais obstáculos em contexto de auditoria..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">7.4</div>
+      <div class="q-text">Quanto tempo estima perder em tarefas puramente administrativas por dia?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q7_4" value="menos30"><span class="option-label">Menos de 30 min</span></label>
+        <label class="option-item"><input type="radio" name="q7_4" value="30a60"><span class="option-label">30 min – 1 hora</span></label>
+        <label class="option-item"><input type="radio" name="q7_4" value="1a2h"><span class="option-label">1 a 2 horas</span></label>
+        <label class="option-item"><input type="radio" name="q7_4" value="mais2h"><span class="option-label">Mais de 2 horas</span></label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 8 ─── -->
+<div class="section" id="s8">
+  <div class="section-header" onclick="toggleSection('s8')">
+    <div class="section-num">8</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Potencial Uso de IA</div>
+      <div class="section-subtitle">Onde a IA pode ajudar — e onde não deve entrar</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">8.1</div>
+      <div class="q-text">Lê regularmente grandes volumes de texto ou documentação?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q8_1" value="sim_muito"><span class="option-label">Sim, frequentemente</span></label>
+        <label class="option-item"><input type="radio" name="q8_1" value="sim_algum"><span class="option-label">Sim, mas moderadamente</span></label>
+        <label class="option-item"><input type="radio" name="q8_1" value="nao"><span class="option-label">Não é uma parte significativa</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">8.2</div>
+      <div class="q-text">Seria útil ter assistência de IA nas seguintes tarefas?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q8_2" value="resumos"><span class="option-label">Resumos automáticos</span></label>
+        <label class="option-item"><input type="checkbox" name="q8_2" value="lacunas"><span class="option-label">Identificação de lacunas</span></label>
+        <label class="option-item"><input type="checkbox" name="q8_2" value="sugestoes"><span class="option-label">Sugestões de validação</span></label>
+        <label class="option-item"><input type="checkbox" name="q8_2" value="drafts"><span class="option-label">Drafts de follow-up</span></label>
+        <label class="option-item"><input type="checkbox" name="q8_2" value="normalizacao"><span class="option-label">Normalização de notas</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">8.3</div>
+      <div class="q-text">Em que tarefas confiaria numa IA assistiva?</div>
+      <textarea class="textarea-input" name="q8_3" placeholder="Descreva tarefas onde a IA poderia ajudar sem grandes riscos..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">8.4</div>
+      <div class="q-text">Em que tarefas não confiaria de todo?</div>
+      <textarea class="textarea-input" name="q8_4" placeholder="Onde a supervisão humana é insubstituível ou o risco é demasiado alto?"></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">8.5</div>
+      <div class="q-text">Já utiliza alguma ferramenta semelhante (IA, automação)?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q8_5" value="sim"><span class="option-label">Sim</span></label>
+        <label class="option-item"><input type="radio" name="q8_5" value="nao"><span class="option-label">Não</span></label>
+        <label class="option-item"><input type="radio" name="q8_5" value="piloto"><span class="option-label">Em piloto / exploração</span></label>
+      </div>
+      <div class="other-input-wrap">
+        <input type="text" class="text-input" name="q8_5_qual" placeholder="Se sim, qual?">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 9 ─── -->
+<div class="section" id="s9">
+  <div class="section-header" onclick="toggleSection('s9')">
+    <div class="section-num">9</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Sensibilidade & Segurança</div>
+      <div class="section-subtitle">Dados, restrições e limites operacionais</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">9.1</div>
+      <div class="q-text">Que tipo de dados manipula com maior frequência?</div>
+      <textarea class="textarea-input" name="q9_1" placeholder="Ex: dados pessoais, transaccionais, documentos de identidade, origem de fundos..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">9.2</div>
+      <div class="q-text">Existem restrições internas relevantes (políticas de segurança, compliance de dados)?</div>
+      <textarea class="textarea-input" name="q9_2" placeholder="Descreva as principais restrições que condicionam o uso de ferramentas..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">9.3</div>
+      <div class="q-text">O que nunca poderia sair dos sistemas oficiais da instituição?</div>
+      <textarea class="textarea-input" name="q9_3" placeholder="Identifique dados ou informações com restrições absolutas de saída..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">9.4</div>
+      <div class="q-text">Seria aceitável trabalhar com:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q9_4" value="id_internos"><span class="option-label">Identificadores internos apenas</span></label>
+        <label class="option-item"><input type="checkbox" name="q9_4" value="mascarados"><span class="option-label">Dados parcialmente mascarados</span></label>
+        <label class="option-item"><input type="checkbox" name="q9_4" value="metadados"><span class="option-label">Metadados sem PII</span></label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 10 ─── -->
+<div class="section" id="s10">
+  <div class="section-header" onclick="toggleSection('s10')">
+    <div class="section-num">10</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Adoção & Usabilidade</div>
+      <div class="section-subtitle">O que torna uma ferramenta adoptada — ou rejeitada</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">10.1</div>
+      <div class="q-text">O que tornaria uma ferramenta realmente útil no seu contexto?</div>
+      <textarea class="textarea-input" name="q10_1" placeholder="Características, integrações, fluxos de trabalho que fariam diferença..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">10.2</div>
+      <div class="q-text">O que faria a equipa rejeitar a solução?</div>
+      <textarea class="textarea-input" name="q10_2" placeholder="Obstáculos, medos, experiências anteriores negativas..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">10.3</div>
+      <div class="q-text">Preferência de interface:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="radio" name="q10_3" value="simples"><span class="option-label">Simples / rápida</span></label>
+        <label class="option-item"><input type="radio" name="q10_3" value="automatizada"><span class="option-label">Muito automatizada</span></label>
+        <label class="option-item"><input type="radio" name="q10_3" value="flexivel"><span class="option-label">Flexível / configurável</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">10.4</div>
+      <div class="q-text">Utilização principal em:</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q10_4" value="desktop"><span class="option-label">Desktop</span></label>
+        <label class="option-item"><input type="checkbox" name="q10_4" value="web"><span class="option-label">Web</span></label>
+        <label class="option-item"><input type="checkbox" name="q10_4" value="mobile"><span class="option-label">Mobile (raro em NFR)</span></label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SECÇÃO 11 ─── -->
+<div class="section" id="s11">
+  <div class="section-header" onclick="toggleSection('s11')">
+    <div class="section-num">11</div>
+    <div class="section-title-wrap">
+      <div class="section-title">Prioridades Reais</div>
+      <div class="section-subtitle">A pergunta decisiva — o que importa de facto</div>
+    </div>
+    <div class="section-toggle">▾</div>
+  </div>
+  <div class="section-body">
+
+    <div class="question">
+      <div class="q-label">11.1</div>
+      <div class="q-text">Se apenas um problema pudesse ser resolvido, qual seria?</div>
+      <textarea class="textarea-input" name="q11_1" placeholder="Seja específico — o problema que mais impacta o seu trabalho diário..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="q-label">11.2</div>
+      <div class="q-text">Qual o ganho mais valioso que uma solução poderia trazer?</div>
+      <div class="options-grid">
+        <label class="option-item"><input type="checkbox" name="q11_2" value="tempo"><span class="option-label">Redução de tempo</span></label>
+        <label class="option-item"><input type="checkbox" name="q11_2" value="erro"><span class="option-label">Redução de erro</span></label>
+        <label class="option-item"><input type="checkbox" name="q11_2" value="controlo"><span class="option-label">Melhor controlo</span></label>
+        <label class="option-item"><input type="checkbox" name="q11_2" value="followups"><span class="option-label">Menos follow-ups</span></label>
+        <label class="option-item"><input type="checkbox" name="q11_2" value="auditoria"><span class="option-label">Melhor auditoria</span></label>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">11.3</div>
+      <div class="q-text">Algum comentário adicional ou contexto que queira partilhar?</div>
+      <textarea class="textarea-input" name="q11_3" placeholder="Espaço livre para qualquer informação relevante não coberta acima..." style="min-height: 120px;"></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUBMIT -->
+<div class="submit-section">
+  <h3>Questionário Completo</h3>
+  <p>Obrigado pelo seu tempo. As suas respostas são fundamentais para o diagnóstico operacional.</p>
+  <button class="btn-submit" onclick="submitForm()">✓ Submeter Respostas</button>
+  <button class="btn-export" onclick="exportAnswers()">↓ Exportar como Texto</button>
+</div>
+
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // TOGGLE SECTIONS
+  function toggleSection(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+  }
+
+  // PROGRESS TRACKING
+  const TOTAL = 45;
+  function updateProgress() {
+    const answered = new Set();
+    // Checkboxes & radios
+    document.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(el => {
+      answered.add(el.name);
+    });
+    // Text inputs with value
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      if (el.value.trim().length > 2) answered.add(el.name);
+    });
+    const count = answered.size;
+    const pct = Math.min(100, Math.round(count / TOTAL * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + TOTAL + ' respondidas';
+  }
+
+  document.addEventListener('input', updateProgress);
+  document.addEventListener('change', updateProgress);
+
+  // SUBMIT via Formspree
+  async function submitForm() {
+    const btn = document.querySelector('.btn-submit');
+    btn.textContent = '⏳ A enviar...';
+    btn.disabled = true;
+
+    const data = {};
+    // Collect all checked checkboxes & radios
+    document.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(el => {
+      const label = el.closest('.option-item').querySelector('.option-label').textContent.trim();
+      if (!data[el.name]) data[el.name] = [];
+      data[el.name].push(label);
+    });
+    // Collect text inputs & textareas
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      if (el.value.trim()) data[el.name] = el.value.trim();
+    });
+
+    // Build a readable email body
+    const sections = [
+      'Contexto Operacional', 'Fontes de Informação', 'Principais Dores',
+      'Validações & Regras', 'Interacção Comercial', 'Controlo & KPIs',
+      'Registos & Evidência', 'Potencial IA', 'Segurança & Dados',
+      'Adoção & Usabilidade', 'Prioridades'
+    ];
+    let body = 'QUESTIONÁRIO OPERACIONAL — ANALISTA COMPLIANCE/AML\n';
+    body += '='.repeat(52) + '\nData: ' + new Date().toLocaleDateString('pt-PT') + '\n';
+
+    document.querySelectorAll('.section').forEach((sec, i) => {
+      body += '\n\n' + (i+1) + '. ' + sections[i].toUpperCase() + '\n' + '-'.repeat(40);
+      sec.querySelectorAll('.question').forEach(q => {
+        const label = q.querySelector('.q-label').textContent;
+        const text = q.querySelector('.q-text').textContent.trim();
+        body += '\n\n' + label + ' ' + text + '\n';
+        const checked = [];
+        q.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(el => {
+          checked.push(el.closest('.option-item').querySelector('.option-label').textContent.trim());
+        });
+        if (checked.length) body += '→ ' + checked.join(', ') + '\n';
+        q.querySelectorAll('input[type="text"], textarea').forEach(el => {
+          if (el.value.trim()) body += '→ ' + el.value.trim() + '\n';
+        });
+      });
+    });
+
+    try {
+      const res = await fetch('https://formspree.io/f/mdalyypw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ _subject: 'Questionário Compliance — Novas Respostas', respostas: body })
+      });
+      if (res.ok) {
+        btn.textContent = '✓ Enviado!';
+        btn.style.background = '#2a6e3f';
+        showToast('✓ Respostas enviadas com sucesso por email!');
+      } else {
+        throw new Error('Erro no envio');
+      }
+    } catch (e) {
+      btn.textContent = '✓ Submeter Respostas';
+      btn.disabled = false;
+      showToast('⚠ Erro ao enviar. Tenta exportar como texto.');
+    }
+  }
+
+  // EXPORT
+  function exportAnswers() {
+    let out = 'QUESTIONÁRIO OPERACIONAL — ANALISTA COMPLIANCE/AML\n';
+    out += '='.repeat(52) + '\n\n';
+    out += 'Data: ' + new Date().toLocaleDateString('pt-PT') + '\n\n';
+
+    const sections = [
+      'Contexto Operacional', 'Fontes de Informação', 'Principais Dores',
+      'Validações & Regras', 'Interacção Comercial', 'Controlo & KPIs',
+      'Registos & Evidência', 'Potencial IA', 'Segurança & Dados',
+      'Adoção & Usabilidade', 'Prioridades'
+    ];
+
+    let sIdx = 0;
+    document.querySelectorAll('.section').forEach((sec, i) => {
+      out += '\n' + (i+1) + '. ' + sections[i].toUpperCase() + '\n' + '-'.repeat(40) + '\n';
+      sec.querySelectorAll('.question').forEach(q => {
+        const label = q.querySelector('.q-label').textContent;
+        const text = q.querySelector('.q-text').textContent.trim();
+        out += '\n' + label + ' ' + text + '\n';
+
+        // Checked options
+        const checked = [];
+        q.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(el => {
+          checked.push(el.closest('.option-item').querySelector('.option-label').textContent.trim());
+        });
+        if (checked.length) out += '→ ' + checked.join(', ') + '\n';
+
+        // Text inputs
+        q.querySelectorAll('input[type="text"], textarea').forEach(el => {
+          if (el.value.trim()) out += '→ ' + el.value.trim() + '\n';
+        });
+      });
+    });
+
+    const blob = new Blob([out], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'questionario_compliance_' + new Date().toISOString().slice(0,10) + '.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('↓ Ficheiro exportado com sucesso!');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
